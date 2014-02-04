@@ -142,8 +142,17 @@ namespace Opm {
 
     };
 
-    //typedef std::shared_ptr<DeckItemGeneric<T>> DeckItemPtr<T>;
-    //typedef std::shared_ptr<const DeckItemGeneric<T>> DeckItemConstPtr<T>;
+    // http://stackoverflow.com/questions/26151/template-typedefs-whats-your-work-around
+
+    template <typename T>
+    struct DeckItemGenericPtr {
+        typedef std::shared_ptr<DeckItemGeneric<T>> type;
+    };
+
+    template <typename T>
+    struct DeckItemGenericConstPtr {
+        typedef std::shared_ptr<const DeckItemGeneric<T>> type;
+    };
 }
 
 
