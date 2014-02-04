@@ -14,6 +14,10 @@ add_executable(runDeckStringItemTests DeckStringItemTests.cpp)
 target_link_libraries(runDeckStringItemTests Parser  ${Boost_LIBRARIES})
 add_test(NAME runDeckStringItemTests  COMMAND ${EXECUTABLE_OUTPUT_PATH}/runDeckStringItemTests  )
 
+add_executable(runDeckItemGenericTests DeckItemGenericTests.cpp)
+target_link_libraries(runDeckItemGenericTests Parser  ${Boost_LIBRARIES})
+add_test(NAME runDeckItemGenericTests  COMMAND ${EXECUTABLE_OUTPUT_PATH}/runDeckItemGenericTests  )
+
 add_executable(runDeckTests DeckTests.cpp)
 target_link_libraries(runDeckTests Parser  ${Boost_LIBRARIES})
 add_test(NAME runDeckTests  COMMAND ${EXECUTABLE_OUTPUT_PATH}/runDeckTests  )

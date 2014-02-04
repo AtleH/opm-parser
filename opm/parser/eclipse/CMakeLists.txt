@@ -85,6 +85,7 @@ Deck/DeckItem.hpp
 Deck/DeckIntItem.hpp
 Deck/DeckDoubleItem.hpp
 Deck/DeckStringItem.hpp
+Deck/DeckItemGeneric.hpp
 Deck/KeywordContainer.hpp
 #
 Parser/ParserEnums.hpp
