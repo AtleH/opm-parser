@@ -35,6 +35,7 @@ namespace Opm {
         public:
             DeckItemGeneric(std::string name) {
                 m_name = name;
+                m_defaultApplied = false;
             }
 
             const std::string& name() const {
@@ -48,6 +49,26 @@ namespace Opm {
                     throw std::out_of_range("Out of range, index must be lower than " + boost::lexical_cast<std::string>(m_data.size()));
 
             }
+
+            const std::vector<T>& getValueList() const {
+                return m_data;
+            }
+
+            T getSIValue(size_t index) const {
+                assertSIData();
+                {
+                    if (index < m_data.size()) {
+                        return m_SIdata[index];
+                    } else
+                        throw std::out_of_range("Out of range, index must be lower than " + boost::lexical_cast<std::string>(m_data.size()));
+                }
+            }
+
+            const std::vector<T>& getSIValueList() const {
+                assertSIData();
+                return m_SIdata;
+            }
+
 
             void push_back(std::deque<T> data) {
                 push_back(data, data.size());
@@ -73,6 +94,13 @@ namespace Opm {
                     m_data.push_back( value );
             }
 
+            void push_backDimension(std::shared_ptr<const Dimension> activeDimension , std::shared_ptr<const Dimension> defaultDimension) {
+                if (m_defaultApplied)
+                    m_dimensions.push_back( defaultDimension );
+                else
+                    m_dimensions.push_back( activeDimension );
+            }
+
             bool defaultApplied() const {
                 return m_defaultApplied;
             }
@@ -80,10 +108,38 @@ namespace Opm {
             size_t size() const {
                 return m_data.size();
             }
+
         private:
             bool m_defaultApplied;
             std::string m_name;
-            std::vector<int> m_data;
+            std::vector<T> m_data;
+            std::vector<std::shared_ptr<const Dimension> > m_dimensions;
+            // mutable is required because the data is "lazily" converted
+            // to SI units in asserSIData() which needs to be callable by
+            // 'const'-decorated methods
+            mutable std::vector<T> m_SIdata;
+
+            void assertSIData() const {
+                if (m_dimensions.size() > 0) {
+                    if (m_SIdata.size() > 0) {
+                        // we already converted this item to SI!
+                        return;
+                    }
+                    m_SIdata.resize( m_data.size() );
+                    if (m_dimensions.size() == 1) {
+                        double SIfactor = m_dimensions[0]->getSIScaling();
+                        std::transform( m_data.begin() , m_data.end() , m_SIdata.begin() , std::bind1st(std::multiplies<double>(),SIfactor));
+                    } else {
+                        for (size_t index=0; index < m_data.size(); index++) {
+                            size_t dimIndex = (index % m_dimensions.size());
+                            double SIfactor = m_dimensions[dimIndex]->getSIScaling();
+                            m_SIdata[index] = m_data[index] * SIfactor;
+                        }
+                    }
+                } else
+                    throw std::invalid_argument("No dimension has been set for item:" + name() + " can not ask for SI data");
+            }
+
     };
 
     //typedef std::shared_ptr<DeckItemGeneric<T>> DeckItemPtr<T>;
