@@ -38,51 +38,10 @@ namespace Opm {
 
         virtual size_t size() const = 0;
         
-        virtual int getInt(size_t index) const {
-            throw std::logic_error("This implementation of DeckItem does not support int");
-        };
+        virtual void push_backDimension(std::shared_ptr<const Dimension> activeDimension , std::shared_ptr<const Dimension> defaultDimension);
 
-        virtual double getSIDouble(size_t index) const {
-            throw std::logic_error("This implementation of DeckItem does not support double");
-        };
-
-        virtual double getRawDouble(size_t index) const {
-            throw std::logic_error("This implementation of DeckItem does not support double");
-        };
-
-        virtual bool getBool(size_t index) const {
-            throw std::logic_error("This implementation of DeckItem does not support bool");
-        }
-
-        virtual std::string getString(size_t index) const {
-            throw std::logic_error("This implementation of DeckItem does not support string");
-        }
-
-        
-
-        virtual const std::vector<int>& getIntData( ) const {
-            throw std::logic_error("This implementation of DeckItem does not support int");
-        };
-
-        virtual const std::vector<double>& getSIDoubleData() const {
-            throw std::logic_error("This implementation of DeckItem does not support double");
-        };
-
-        virtual const std::vector<double>& getRawDoubleData() const {
-            throw std::logic_error("This implementation of DeckItem does not support double");
-        };
-
-        virtual const std::vector<std::string>& getStringData() const {
-            throw std::logic_error("This implementation of DeckItem does not support string");
-        }
-
-        virtual void push_backDimension(std::shared_ptr<const Dimension> activeDimension , std::shared_ptr<const Dimension> defaultDimension) {
-            throw std::invalid_argument("Should not be here - internal error ...");
-        }
-
-        virtual ~DeckItem() {
-        }
-
+        virtual ~DeckItem();
+    protected:
         bool m_defaultApplied;
     private:
         std::string m_name;

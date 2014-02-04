@@ -31,7 +31,7 @@
 namespace Opm {
 
     template <class T>
-    class DeckItemGeneric {
+    class DeckItemGeneric : DeckItem {
         public:
             DeckItemGeneric(std::string name) {
                 m_name = name;
@@ -110,8 +110,6 @@ namespace Opm {
             }
 
         private:
-            bool m_defaultApplied;
-            std::string m_name;
             std::vector<T> m_data;
             std::vector<std::shared_ptr<const Dimension> > m_dimensions;
             // mutable is required because the data is "lazily" converted
