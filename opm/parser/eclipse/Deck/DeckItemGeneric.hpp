@@ -30,10 +30,23 @@
 
 namespace Opm {
 
-    template <class T>
-    class DeckItemGeneric : DeckItem {
+    class DeckItemBase {
         public:
-            DeckItemGeneric(std::string name) {
+            const std::string& name() const;
+            void push_backDimension(std::shared_ptr<const Dimension> activeDimension , std::shared_ptr<const Dimension> defaultDimension);
+            bool defaultApplied() const;
+            virtual size_t size() const = 0;
+        protected:
+            std::string m_name;
+            bool m_defaultApplied;
+    };
+
+
+
+    template <class T>
+    class DeckItemGeneric : DeckItemBase {
+        public:
+            DeckItemGeneric(const std::string& name) {
                 m_name = name;
                 m_defaultApplied = false;
             }

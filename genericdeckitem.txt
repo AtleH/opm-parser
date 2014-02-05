@@ -1,0 +1,41 @@
+Task:
+OPM-15: Rewrite specific DeckXyzItem-classes into a generic DeckItem<T>.
+
+
+Files affected:
+./opm/parser/eclipse/Deck/DeckItem
+./opm/parser/eclipse/Deck/DeckIntItem
+./opm/parser/eclipse/Deck/DeckStringItem
+./opm/parser/eclipse/Deck/DeckDoubleItem
+./opm/parser/eclipse/Deck/DeckItem[Generic]<T> (new)
+./opm/parser/eclipse/Deck/tests/DeckIntItemTests
+./opm/parser/eclipse/Deck/tests/DeckStringItemTests
+./opm/parser/eclipse/Deck/tests/DeckDoubleItemTests
+./opm/parser/eclipse/Deck/tests/DeckItem[Generic]Tests (new)
+
+Steps:
+OK  1. Create new DeckItemGenericTests class.
+OK  2. Create new DeckItemGeneric<T> class, inheriting from DeckItem.
+OK  3. Copy tests (one-by-one) from DeckIntItemTests into DeckItemGenericTests, and use them to drive logic in DeckItemGeneric<T>.
+OK  4. Repeat 3 for DeckStringItemTests.
+OK  5. Repeat 3 for DeckDoubleItemTests.
+ 6. Mark DeckIntItem obsolete, and use DeckItemGeneric<int> instead.
+ 7. Repeat 4 for DeckStringItemTests.
+ 8. Repeat 4 for DeckDoubleItemTests.
+ 9. Mark DeckItem as obsolete, and rename it to DeckItemObsolete.
+10. Rename DeckItemGeneric<T> to DeckItem<T>. Rename DeckItemGenericTests to DeckItemTests.
+11. Remove DeckIntItem, DeckStringItem, DeckDoubleItem and DeckItemObsolete.
+
+
+
+To be solved:
+- DeckKeyword depends on DeckItem having type-specific methods
+  - Expose generic method instead: getItem(), returning DeckItemPtr.
+  - Rewrite tests.
+  - Remove old methods in DeckKeyword.
+- Need to split 'old' and 'new' DeckItem
+  - Revert to old version of DeckItem.
+  - Create a new DeckItemBase and let DeckItemGeneric inherit from it.
+
+
+
