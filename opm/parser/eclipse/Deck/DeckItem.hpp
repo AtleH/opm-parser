@@ -31,7 +31,7 @@ namespace Opm {
 
     class DeckItem {
     public:
-        DeckItem(const std::string& name);
+        DeckItem(const std::string& name , bool m_scalar = true);
         const std::string& name() const;
         
         bool defaultApplied() const;
@@ -66,7 +66,7 @@ namespace Opm {
             throw std::logic_error("This implementation of DeckItem does not support string");
         }
 
-        virtual std::string getTrimmedString(size_t index) const  {
+        virtual std::string getTrimmedString(size_t /* index */) const  {
             throw std::logic_error("This implementation of DeckItem does not support trimmed strings");
         }
 
@@ -106,6 +106,7 @@ namespace Opm {
         bool m_defaultApplied;
     private:
         std::string m_name;
+        bool m_scalar;
     };
 
     typedef std::shared_ptr<DeckItem> DeckItemPtr;

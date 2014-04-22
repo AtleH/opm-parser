@@ -16,26 +16,25 @@
   You should have received a copy of the GNU General Public License
   along with OPM.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef OPM_PARSER_PVDCO_TABLE_HPP
-#define	OPM_PARSER_PVDCO_TABLE_HPP
+#ifndef OPM_PARSER_PLYMAX_TABLE_HPP
+#define	OPM_PARSER_PLYMAX_TABLE_HPP
 
 #include "SimpleTable.hpp"
 
 namespace Opm {
-    class PvdcoTable : protected SimpleTable {
+    class PlymaxTable : protected SimpleTable {
         typedef SimpleTable ParentType;
 
     public:
         /*!
-         * \brief Read the PVDCO keyword and provide some convenience
+         * \brief Read the PLYMAX keyword and provide some convenience
          *        methods for it.
          */
-        PvdcoTable(Opm::DeckKeywordConstPtr keyword,
-                  int recordIdx = 0,
-                  int firstEntityOffset = 0)
-            : SimpleTable(keyword,
-                          std::vector<std::string>{"P", "BW", "CW", "MUW", "CMUW"},
-                          recordIdx, firstEntityOffset)
+        PlymaxTable(Opm::DeckKeywordConstPtr keyword, int recordIdx = 0)
+            : ParentType(keyword,
+                         std::vector<std::string>{"C_POLYMER", "C_POLYMER_MAX"},
+                         recordIdx,
+                         /*firstEntityOffset=*/0)
         {}
 
         int numRows() const
@@ -44,22 +43,13 @@ namespace Opm {
         int numColumns() const
         { return ParentType::numColumns(); };
 
-        const std::vector<double> &getPressureColumn() const
+        const std::vector<double> &getPolymerConcentrationColumn() const
         { return ParentType::getColumn(0); }
 
-        const std::vector<double> &getFormationFactorColumn() const
+        const std::vector<double> &getMaxPolymerConcentrationColumn() const
         { return ParentType::getColumn(1); }
-
-        const std::vector<double> &getCompressibilityColumn() const
-        { return ParentType::getColumn(2); }
-
-        const std::vector<double> &getViscosityColumn() const
-        { return ParentType::getColumn(3); }
-
-        const std::vector<double> &getViscosibilityColumn() const
-        { return ParentType::getColumn(4); }
     };
 }
 
-#endif	// OPM_PARSER_PVDCO_TABLE_HPP
+#endif	// OPM_PARSER_SIMPLE_TABLE_HPP
 

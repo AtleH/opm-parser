@@ -48,11 +48,11 @@ namespace Opm {
         return 0;
     }
 
-    const std::string& ParserItem::getDimension(size_t index) const {
+    const std::string& ParserItem::getDimension(size_t /* index */) const {
         throw std::invalid_argument("Should not call this ... \n");       
     }
 
-    void ParserItem::push_backDimension(const std::string& dimension) {
+    void ParserItem::push_backDimension(const std::string& /* dimension */) {
         throw std::invalid_argument("Should not call this ... \n");       
     }
     
@@ -81,6 +81,13 @@ namespace Opm {
 
     ParserItemSizeEnum ParserItem::sizeType() const {
         return m_sizeType;
+    }
+
+    bool ParserItem::scalar() const {
+        if (m_sizeType == SINGLE)
+            return true;
+        else
+            return false;
     }
 
     std::string ParserItem::getDescription() const {
