@@ -1,7 +1,7 @@
 WCONPROD
 -- Max BHP
 -- Rate limit
-'PROD2' 'OPEN' 'ORAT' 1500 4* 1000 /
+'PROD*' 'OPEN' 'ORAT' 1500 4* 1000 /
 /
 
 WELSPECS
