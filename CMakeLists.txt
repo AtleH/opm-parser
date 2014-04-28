@@ -5,7 +5,8 @@ enable_language(C)
 
 
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules")
-SET( CMAKE_CXX_FLAGS "-pipe -Wall -Wno-unknown-pragmas -std=c++0x")
+SET( CMAKE_CXX_FLAGS "-pipe -std=c++0x -pedantic -Wall -Wextra -Wformat-nonliteral -Wcast-align -Wpointer-arith -Wmissing-declarations -Wcast-qual -Wshadow -Wwrite-strings -Wchar-subscripts -Wredundant-decls")
+
 SET( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}   -O0 -DDEBUG  -ggdb3")
 SET( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG -mtune=native")
 
@@ -49,13 +50,14 @@ else()
     include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/opm/json" )   
 endif()
 
+include("cmake/Modules/CheckCaseSensitiveFileSystem.cmake")
+add_definitions("-DHAVE_CASE_SENSITIVE_FILESYSTEM=${HAVE_CASE_SENSITIVE_FILESYSTEM}")
+
 find_package(ERT)
 include_directories( ${ERT_INCLUDE_DIRS} )   
 
-
 set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/bin)
-
 
 add_subdirectory(opm/json)
 add_subdirectory(opm/parser)
