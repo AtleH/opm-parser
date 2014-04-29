@@ -1,8 +1,8 @@
-WCONPROD
--- Max BHP
--- Rate limit
-'PROD*' 'OPEN' 'ORAT' 1500 4* 1000 /
-/
+START
+10 MAI 2007 /
+
+
+SCHEDULE
 
 WELSPECS
 -- Well specification data
@@ -32,4 +32,10 @@ WELSPECS
 'PROD24' 'P' 12 23 9110 'OIL' /
 'PROD25' 'P' 10 24 9110 'OIL' /
 'PROD26' 'P' 17 25 9110 'OIL' /
+/
+
+WCONPROD
+-- Max BHP
+-- Rate limit
+'PROD*' 'OPEN' 'ORAT' 1500 4* 1000 /
 /

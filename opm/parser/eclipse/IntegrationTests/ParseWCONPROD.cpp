@@ -29,6 +29,7 @@
 #include <opm/parser/eclipse/Parser/ParserStringItem.hpp>
 
 #include <opm/parser/eclipse/Parser/ParserEnums.hpp>
+#include <opm/parser/eclipse/EclipseState/Schedule/Schedule.hpp>
 
 using namespace Opm;
 
@@ -37,6 +38,8 @@ BOOST_AUTO_TEST_CASE( parse_WCONPROD_OK ) {
     ParserPtr parser(new Parser());
     boost::filesystem::path wconprodFile("testdata/integration_tests/WCONPROD/WCONPROD1");
     DeckPtr deck =  parser->parseFile(wconprodFile.string());
-    DeckKeywordConstPtr kw1 = deck->getKeyword("WCONPROD" , 0);
-    BOOST_CHECK_EQUAL( 1U , kw1->size() );
+    ScheduleConstPtr sched(new Schedule(deck));
+    //BOOST_CHECK_EQUAL( );
+
 }
+
