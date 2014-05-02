@@ -175,14 +175,15 @@ namespace Opm {
             const std::string& wellNamePattern    = record->getItem("WELL")->getTrimmedString(0);
             std::vector<WellPtr> wells       = getWells(wellNamePattern);
 
-            for (auto well=wells.begin(); well != wells.end(); ++well) {
+            for (auto iter=wells.begin(); iter != wells.end(); ++iter) {
+                WellPtr well                          = *iter;
                 double orat                           = record->getItem("ORAT")->getSIDouble(0);
                 double wrat                           = record->getItem("WRAT")->getSIDouble(0);
                 double grat                           = record->getItem("GRAT")->getSIDouble(0);
                 WellCommon::StatusEnum status         = WellCommon::StatusFromString( record->getItem("STATUS")->getTrimmedString(0));
-                WellProductionProperties properties   = (*well)->getProductionPropertiesCopy(currentStep);
+                WellProductionProperties properties   = well->getProductionProperties(currentStep);
 
-                (*well)->setStatus( currentStep , status );
+                well->setStatus( currentStep , status );
                 {
                     double liquidRate = 0;
                     double resVRate = 0;
@@ -275,7 +276,7 @@ namespace Opm {
                     }
                 }
 
-                (*well)->setProductionProperties(currentStep, properties);
+                well->setProductionProperties(currentStep, properties);
             }
         }
     }
@@ -291,60 +292,63 @@ namespace Opm {
     void Schedule::handleWCONINJE(DeckConstPtr deck, DeckKeywordConstPtr keyword, size_t currentStep) {
         for (size_t recordNr = 0; recordNr < keyword->size(); recordNr++) {
             DeckRecordConstPtr record = keyword->getRecord(recordNr);
-            const std::string& wellName = record->getItem("WELL")->getTrimmedString(0);
-            WellPtr well = getWell(wellName);
+            const std::string& wellNamePattern = record->getItem("WELL")->getTrimmedString(0);
+            std::vector<WellPtr> wells = getWells(wellNamePattern);
 
-            // calculate the injection rates. These are context
-            // dependent, so we have to jump through some hoops
-            // here...
-            WellInjector::TypeEnum injectorType = WellInjector::TypeFromString( record->getItem("TYPE")->getTrimmedString(0) );
-            double surfaceInjectionRate = record->getItem("RATE")->getRawDouble(0);
-            double reservoirInjectionRate = record->getItem("RESV")->getRawDouble(0);
-            surfaceInjectionRate = convertInjectionRateToSI(surfaceInjectionRate, injectorType, *deck->getActiveUnitSystem());
-            reservoirInjectionRate = convertInjectionRateToSI(reservoirInjectionRate, injectorType, *deck->getActiveUnitSystem());
+            for (auto iter=wells.begin(); iter != wells.end(); ++iter) {
+                WellPtr well                          = *iter;
+                // calculate the injection rates. These are context
+                // dependent, so we have to jump through some hoops
+                // here...
+                WellInjector::TypeEnum injectorType = WellInjector::TypeFromString( record->getItem("TYPE")->getTrimmedString(0) );
+                double surfaceInjectionRate = record->getItem("RATE")->getRawDouble(0);
+                double reservoirInjectionRate = record->getItem("RESV")->getRawDouble(0);
+                surfaceInjectionRate = convertInjectionRateToSI(surfaceInjectionRate, injectorType, *deck->getActiveUnitSystem());
+                reservoirInjectionRate = convertInjectionRateToSI(reservoirInjectionRate, injectorType, *deck->getActiveUnitSystem());
 
-            double BHPLimit                           = record->getItem("BHP")->getSIDouble(0);
-            double THPLimit                           = record->getItem("THP")->getSIDouble(0);
-            WellCommon::StatusEnum status             = WellCommon::StatusFromString( record->getItem("STATUS")->getTrimmedString(0));
-       
-            well->setStatus( currentStep , status );
-            WellInjectionProperties properties(well->getInjectionPropertiesCopy(currentStep));
-            properties.surfaceInjectionRate = surfaceInjectionRate;
-            properties.reservoirInjectionRate = reservoirInjectionRate;
-            properties.BHPLimit = BHPLimit;
-            properties.THPLimit = THPLimit;
-            properties.injectorType = injectorType;
-            properties.predictionMode = true;
-            
-            if (record->getItem("RATE")->defaultApplied())
-                properties.dropInjectionControl(WellInjector::RATE);
-            else
-                properties.addInjectionControl(WellInjector::RATE);
+                double BHPLimit                           = record->getItem("BHP")->getSIDouble(0);
+                double THPLimit                           = record->getItem("THP")->getSIDouble(0);
+                WellCommon::StatusEnum status             = WellCommon::StatusFromString( record->getItem("STATUS")->getTrimmedString(0));
 
-            if (record->getItem("RESV")->defaultApplied())
-                properties.dropInjectionControl(WellInjector::RESV);
-            else
-                properties.addInjectionControl(WellInjector::RESV);
+                well->setStatus( currentStep , status );
+                WellInjectionProperties properties(well->getInjectionPropertiesCopy(currentStep));
+                properties.surfaceInjectionRate = surfaceInjectionRate;
+                properties.reservoirInjectionRate = reservoirInjectionRate;
+                properties.BHPLimit = BHPLimit;
+                properties.THPLimit = THPLimit;
+                properties.injectorType = injectorType;
+                properties.predictionMode = true;
 
-            if (record->getItem("THP")->defaultApplied())
-                properties.dropInjectionControl(WellInjector::THP);
-            else
-                properties.addInjectionControl(WellInjector::THP);
+                if (record->getItem("RATE")->defaultApplied())
+                    properties.dropInjectionControl(WellInjector::RATE);
+                else
+                    properties.addInjectionControl(WellInjector::RATE);
 
-            if (record->getItem("BHP")->defaultApplied())
-                properties.dropInjectionControl(WellInjector::BHP);
-            else
-                properties.addInjectionControl(WellInjector::BHP);
-            {
-                const std::string& cmodeString = record->getItem("CMODE")->getTrimmedString(0);
-                WellInjector::ControlModeEnum controlMode = WellInjector::ControlModeFromString( cmodeString );
-                if (properties.hasInjectionControl( controlMode))
-                    properties.controlMode = controlMode;
-                else {
-                    throw std::invalid_argument("Tried to set invalid control: " + cmodeString + " for well: " + wellName);
+                if (record->getItem("RESV")->defaultApplied())
+                    properties.dropInjectionControl(WellInjector::RESV);
+                else
+                    properties.addInjectionControl(WellInjector::RESV);
+
+                if (record->getItem("THP")->defaultApplied())
+                    properties.dropInjectionControl(WellInjector::THP);
+                else
+                    properties.addInjectionControl(WellInjector::THP);
+
+                if (record->getItem("BHP")->defaultApplied())
+                    properties.dropInjectionControl(WellInjector::BHP);
+                else
+                    properties.addInjectionControl(WellInjector::BHP);
+                {
+                    const std::string& cmodeString = record->getItem("CMODE")->getTrimmedString(0);
+                    WellInjector::ControlModeEnum controlMode = WellInjector::ControlModeFromString( cmodeString );
+                    if (properties.hasInjectionControl( controlMode))
+                        properties.controlMode = controlMode;
+                    else {
+                        throw std::invalid_argument("Tried to set invalid control: " + cmodeString + " for well: " + wellNamePattern);
+                    }
                 }
+                well->setInjectionProperties(currentStep, properties);
             }
-            well->setInjectionProperties(currentStep, properties);
         }
     }
 
